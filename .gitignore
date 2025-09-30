@@ -1,0 +1,19 @@
+# Ignore Python virtual environment
+.venv/
+env/
+venv/
+
+# Ignore audio/video files
+audios/
+Videos/
+*.mp3
+*.wav
+*.mp4
+*.mkv
+*.avi
+*.mov
+
+# Ignore system / editor files
+.vscode/
+.DS_Store
+Thumbs.db
