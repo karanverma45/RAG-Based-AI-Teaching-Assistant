@@ -4,6 +4,7 @@ env/
 venv/
 
 # Ignore audio/video files
+jsons/
 audios/
 Videos/
 *.mp3
