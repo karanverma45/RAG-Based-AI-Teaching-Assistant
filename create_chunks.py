@@ -13,6 +13,7 @@ for audio in audios:
         print(number, title)
         result = model.transcribe(audio = f"audios/{audio}", 
         # result = model.transcribe(audio = f"audios/sample.mp3", 
+        # result = model.transcribe(audio = f"audios/11111111111.mp3",
                               language="hi",
                               task="translate",
                               word_timestamps=False )
