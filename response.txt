@@ -1,0 +1,11 @@
+To find out when HTML is concluded in your Sigma Web Development course, let's look at the timestamps for each relevant video.
+
+You can see from Video 13 that "Entities, Code tag and more on HTML" has a start time of 2.56 seconds and an end time of 5.24 seconds. Then there's another mention of "HTML has been concluded" with a start time of 520.32 seconds and an end time of 522.16 seconds.
+
+Considering the timestamps, it appears that HTML is first mentioned at the beginning (2:55 minutes into) Video 13 and then again in Video 13 itself (at 520.32 seconds).
+
+However, there's also a mention of finishing HTML right after saying "We have finished the whole HTML." with a start time of 5:28 minutes into Video 14.
+
+So, to answer your question, HTML seems to be concluded in both Video 13 and Video 14, but I'll guide you on how to clarify this further.
+
+To find more information about when exactly the course concludes its HTML coverage, watch Video 14, which is at timestamp 1064.44 seconds into the video series (approximately 17 minutes and 46 seconds).
