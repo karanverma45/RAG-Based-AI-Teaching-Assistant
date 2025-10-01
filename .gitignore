@@ -13,5 +13,5 @@ Videos/
 .vscode/
 .DS_Store
 Thumbs.db
-.embeddings.joblib
-
+# Ignore .joblib file 
+*.joblib
