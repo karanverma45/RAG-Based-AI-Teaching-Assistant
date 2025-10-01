@@ -3,13 +3,15 @@
 env/
 venv/
 
-# Ignore audio/video files
+# Ignore audio/video files/.joblib files 
 jsons/
 audios/
 Videos/
 *.mp3
 *.mp4
+*.joblib
 # Ignore system / editor files
 .vscode/
 .DS_Store
 Thumbs.db
+
