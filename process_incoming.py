@@ -3,6 +3,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np 
 import joblib 
 import requests
+from openai import OpenAI
+from config import api_key
+
+# client = OpenAI(api_key=api_key)
+
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=api_key
+)
 
 
 def create_embedding(text_list):
@@ -27,7 +36,27 @@ def inference(prompt):
     print(response)
     return response
 
+# def inference_openai(prompt):
+#     response = client.responses.create(
+#         model="gpt-5",
+#         input=prompt
+#     )
+#     return response.output_text
 
+def inference_openai(prompt):
+    print("Thinking...")
+    response = client.chat.completions.create(
+        model="openai/gpt-5",
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt}
+                ]
+            }
+        ]
+    )
+    return response.choices[0].message.content
 
 df = joblib.load('embeddings.joblib')
 
@@ -51,16 +80,24 @@ prompt = f'''I am teaching web devlopment in my sigma web development course. He
 
 -------------------------------------------------------------------------------------------------------------
 {incoming_query}
-User ask this question related to the video chunk, you have to answer in human way(dont mention the above format, its just for you) where is and how much content is taught in which video (in which and at what timestamp) and guide the user to go to that particular video. If user asks unrelated question, tell him that you can only answer question related to the course
+User ask this question related to the video chunk, you have to answer in human way(dont mention the above format, its just for you) where is and how much content is taught in which video (in which and at what timestamp) and guide the user to go to that particular video and return time in minutes not seconds. If user asks unrelated question, tell him that you can only answer question related to the course
 '''
 
 with open("prompt.txt", "w") as f:
     f.write(prompt)
 
-response = inference(prompt)["response"]
+# response = inference(prompt)["response"]
+# print(response)
+
+response = inference_openai(prompt)
+
+# with open("response.txt", "w") as f:
+#     f.write(response)
+
+with open ("response.text", "w", encoding="utf-8") as f:
+    f.write(response)
+
 print(response)
 
-with open("response.txt", "w") as f:
-    f.write(response)
 # for index, item in new_df.iterrows():
 #     print(index, item["title"], item["number"], item["text"], item["start"], item["end"])
