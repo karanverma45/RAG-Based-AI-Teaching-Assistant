@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Course Q&A</title>
+    <style>
+      :root { color-scheme: light dark; }
+      html, body { height: 100%; }
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 0; background: #0b1020; color: #e6e8ef; }
+      .app { display: grid; grid-template-rows: 64px 1fr; height: 100%; }
+      /* Top bar */
+      .topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 16px; border-bottom: 1px solid #1d2547; background: #101733; }
+      .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; }
+      .logo img { width: 36px; height: 36px; border-radius: 8px; }
+      .menu { display: flex; align-items: center; gap: 12px; }
+      .hamburger { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; background: #0e1530; border: 1px solid #2a3566; border-radius: 8px; cursor: pointer; }
+      .hamburger div { width: 18px; height: 2px; background: #e6e8ef; position: relative; }
+      .hamburger div:before, .hamburger div:after { content: ""; position: absolute; left: 0; width: 18px; height: 2px; background: #e6e8ef; }
+      .hamburger div:before { top: -6px; }
+      .hamburger div:after { top: 6px; }
+      .btn { padding: 10px 14px; border-radius: 8px; border: 1px solid #2a3566; background: #0e1530; color: #e6e8ef; cursor: pointer; }
+      .btn.primary { border: 0; background: linear-gradient(135deg,#5b7cfa,#6bd5ff); color: #0b1020; font-weight: 800; }
+
+      /* Drawer */
+      .drawer { position: fixed; top: 64px; right: 16px; width: 280px; background: #0e1530; border: 1px solid #2a3566; border-radius: 12px; padding: 12px; display: none; z-index: 10; }
+      .drawer.open { display: block; }
+      .drawer h4 { margin: 8px 8px 4px; color: #9fb2ff; }
+      .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-radius: 8px; }
+      .row:hover { background: #0b1330; }
+      .switch { width: 42px; height: 24px; background: #25305f; border-radius: 12px; position: relative; cursor: pointer; }
+      .switch .knob { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: #e6e8ef; border-radius: 50%; transition: all .2s; }
+      .switch.on { background: #62c1ff; }
+      .switch.on .knob { left: 21px; background: #0b1020; }
+
+      /* Content */
+      .content { display: grid; grid-template-columns: 1fr 340px; gap: 16px; padding: 18px; height: calc(100% - 0px); }
+      .panel { background: #131a33; border: 1px solid #1d2547; border-radius: 12px; padding: 18px; }
+      .title { margin: 0 0 6px; font-size: 22px; font-weight: 800; }
+      .sub { margin: 0 0 16px; color: #aab4d9; }
+      .ask { display: flex; gap: 10px; }
+      .ask input { flex: 1; padding: 14px 16px; border-radius: 10px; border: 1px solid #2a3566; background: #0e1530; color: #e6e8ef; }
+      .ask button { padding: 12px 16px; border-radius: 10px; border: 0; background: linear-gradient(135deg,#5b7cfa,#6bd5ff); color: #0b1020; font-weight: 800; cursor: pointer; }
+      .result { margin-top: 14px; white-space: pre-wrap; background: #0e1530; border: 1px solid #2a3566; padding: 14px; border-radius: 10px; color: #dfe6ff; min-height: 120px; }
+
+      .history h3 { margin: 0 0 8px; }
+      .item { padding: 10px 12px; border-radius: 8px; border: 1px solid #1d2547; margin-bottom: 8px; background: #101733; color: #d0d9ff; cursor: pointer; }
+
+      /* Light mode */
+      body.light { background: #f5f6fb; color: #0c1430; }
+      body.light .topbar { background: #ffffff; border-bottom-color: #e7e9f3; }
+      body.light .hamburger { background: #f3f5ff; border-color: #d5dcff; }
+      body.light .hamburger div, body.light .hamburger div:before, body.light .hamburger div:after { background: #0c1430; }
+      body.light .btn { background: #f3f5ff; border-color: #d5dcff; color: #0c1430; }
+      body.light .drawer { background: #ffffff; border-color: #e7e9f3; }
+      body.light .row:hover { background: #f6f7fd; }
+      body.light .switch { background: #c7d2ff; }
+      body.light .switch.on .knob { background: #ffffff; }
+      body.light .panel { background: #ffffff; border-color: #e7e9f3; }
+      body.light .ask input { background: #ffffff; border-color: #dfe3f4; color: #0c1430; }
+      body.light .result { background: #ffffff; border-color: #e7e9f3; color: #0c1430; }
+      body.light .item { background: #ffffff; border-color: #e7e9f3; color: #0c1430; }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="topbar">
+        <div class="logo">
+          <img src="https://dummyimage.com/72x72/5b7cfa/ffffff.png&text=S" alt="Logo" />
+          <span>Sigma Course</span>
+        </div>
+        <div class="menu">
+          <button class="btn" id="loginBtn">Login</button>
+          <button class="btn primary" id="signupBtn">Sign up</button>
+          <div class="hamburger" id="hamburger"><div></div></div>
+        </div>
+        <div class="drawer" id="drawer">
+          <h4>Quick actions</h4>
+          <div class="row">
+            <span>Settings</span>
+          </div>
+          <div class="row">
+            <span>Profile</span>
+          </div>
+          <div class="row" style="justify-content: space-between;">
+            <span>Dark mode</span>
+            <div class="switch" id="darkSwitch"><div class="knob"></div></div>
+          </div>
+          <div class="row" id="logoutRow" style="display:none;justify-content: flex-start; gap: 10px;">
+            <button class="btn" id="logoutBtn">Logout</button>
+          </div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="panel">
+          <div class="title">Ask about the Sigma Web Development Course</div>
+          <div class="sub">Type your question and hit Ask. You will see video references.</div>
+          <div class="ask">
+            <input id="query" type="text" placeholder="e.g., What are semantic tags and where are they covered?" />
+            <button id="askBtn">Ask</button>
+          </div>
+          <div class="result" id="result"></div>
+        </div>
+        <div class="panel history">
+          <h3>Your previous questions</h3>
+          <div id="history"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const drawer = document.getElementById('drawer');
+      const hamburger = document.getElementById('hamburger');
+      const darkSwitch = document.getElementById('darkSwitch');
+      const askBtn = document.getElementById('askBtn');
+      const queryInput = document.getElementById('query');
+      const resultBox = document.getElementById('result');
+      const historyBox = document.getElementById('history');
+      const loginBtn = document.getElementById('loginBtn');
+      const signupBtn = document.getElementById('signupBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const logoutRow = document.getElementById('logoutRow');
+
+      // Drawer toggle
+      hamburger.addEventListener('click', () => {
+        drawer.classList.toggle('open');
+      });
+
+      // Theme persistence
+      function applyTheme(theme) {
+        document.body.classList.toggle('light', theme === 'light');
+        darkSwitch.classList.toggle('on', theme !== 'light');
+      }
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      applyTheme(savedTheme);
+      darkSwitch.addEventListener('click', () => {
+        const now = document.body.classList.contains('light') ? 'dark' : 'light';
+        localStorage.setItem('theme', now);
+        applyTheme(now);
+      });
+
+      // Ask
+      async function ask(query) {
+        resultBox.textContent = 'Thinking...';
+        const res = await fetch('/api/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query }) });
+        const data = await res.json();
+        if (!res.ok) { resultBox.textContent = data.error || 'Error'; return; }
+        resultBox.textContent = data.answer || '';
+        await loadHistory();
+      }
+      askBtn.addEventListener('click', () => {
+        const q = queryInput.value.trim(); if (!q) { resultBox.textContent = 'Please enter a question about the course.'; return; }
+        ask(q);
+      });
+      queryInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); askBtn.click(); }});
+
+      // History
+      async function loadHistory() {
+        const res = await fetch('/api/history');
+        const data = await res.json();
+        historyBox.innerHTML = '';
+        (data.questions || []).forEach(q => {
+          const d = document.createElement('div');
+          d.className = 'item';
+          d.textContent = q.question;
+          d.addEventListener('click', () => { queryInput.value = q.question; });
+          historyBox.appendChild(d);
+        });
+        logoutRow.style.display = (data.questions && data.questions.length !== undefined) ? 'flex' : 'none';
+      }
+
+      // Auth flows
+      async function api(path, payload) {
+        const res = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error');
+        return data;
+      }
+      loginBtn.addEventListener('click', async () => {
+        const email = prompt('Email:');
+        const password = prompt('Password:');
+        if (!email || !password) return;
+        try { await api('/login', { email, password }); await loadHistory(); alert('Logged in'); }
+        catch (e) { alert(e.message); }
+      });
+      signupBtn.addEventListener('click', async () => {
+        const name = prompt('Name (optional):') || '';
+        const email = prompt('Email:');
+        const password = prompt('Password:');
+        if (!email || !password) return;
+        try { await api('/signup', { name, email, password }); await loadHistory(); alert('Signed up and logged in'); }
+        catch (e) { alert(e.message); }
+      });
+      logoutBtn.addEventListener('click', async () => {
+        try { await api('/logout', {}); historyBox.innerHTML = ''; alert('Logged out'); }
+        catch (e) { alert(e.message); }
+      });
+
+      // Init
+      loadHistory();
+    </script>
+  </body>
+  </html>
+
+

@@ -33,7 +33,6 @@ def inference(prompt):
     })
     
     response = r.json()
-    print(response)
     return response
 
 # def inference_openai(prompt):
@@ -44,7 +43,6 @@ def inference(prompt):
 #     return response.output_text
 
 def inference_openai(prompt):
-    print("Thinking...")
     response = client.chat.completions.create(
         model="openai/gpt-5",
         messages=[
@@ -58,46 +56,70 @@ def inference_openai(prompt):
     )
     return response.choices[0].message.content
 
-df = joblib.load('embeddings.joblib')
+# --------- RAG utility and public API ---------
+_DF_CACHE = None
 
 
-incoming_query = input("Ask a Question: ")
-question_embedding = create_embedding([incoming_query])[0] 
+def _load_embeddings_df():
+    global _DF_CACHE
+    if _DF_CACHE is None:
+        _DF_CACHE = joblib.load('embeddings.joblib')
+    return _DF_CACHE
 
-# Find similarities of question_embedding with other embeddings
-# print(np.vstack(df['embedding'].values))
-# print(np.vstack(df['embedding']).shape)
-similarities = cosine_similarity(np.vstack(df['embedding']), [question_embedding]).flatten()
-# print(similarities)
-top_results = 5
-max_indx = similarities.argsort()[::-1][0:top_results]
-# print(max_indx)
-new_df = df.loc[max_indx] 
-# print(new_df[["title", "number", "text"]])
-prompt = f'''I am teaching web devlopment in my sigma web development course. Here are video subtitle chunk containing video title, video number, start time in seconds, end time in seconds, the text at that time:
 
-{new_df[["title" , "number", "start", "end", "text"]].to_json(orient="records")}
+def _to_minutes(seconds):
+    return round(float(seconds) / 60.0, 2)
+
+
+def _build_prompt(context_df, incoming_query):
+    return f'''I am teaching web devlopment in my sigma web development course. Here are video subtitle chunk containing video title, video number, start time in seconds, end time in seconds, the text at that time:
+
+{context_df[["title" , "number", "start", "end", "text"]].to_json(orient="records")}
 
 -------------------------------------------------------------------------------------------------------------
 {incoming_query}
 User ask this question related to the video chunk, you have to answer in human way(dont mention the above format, its just for you) where is and how much content is taught in which video (in which and at what timestamp) and guide the user to go to that particular video and return time in minutes not seconds. If user asks unrelated question, tell him that you can only answer question related to the course
 '''
 
-with open("prompt.txt", "w") as f:
-    f.write(prompt)
 
-# response = inference(prompt)["response"]
-# print(response)
+def answer_query(incoming_query: str) -> str:
+    df = _load_embeddings_df()
+    if df is None or len(df) == 0:
+        raise RuntimeError("Embeddings are not available. Please generate 'embeddings.joblib'.")
 
-response = inference_openai(prompt)
+    question_embedding = create_embedding([incoming_query])[0]
+    similarities = cosine_similarity(np.vstack(df['embedding']), [question_embedding]).flatten()
+    top_results = 5
+    max_indx = similarities.argsort()[::-1][0:top_results]
+    new_df = df.loc[max_indx]
 
-# with open("response.txt", "w") as f:
-#     f.write(response)
+    try:
+        new_df = new_df.copy()
+        new_df['start_min'] = new_df['start'].apply(_to_minutes)
+        new_df['end_min'] = new_df['end'].apply(_to_minutes)
+    except Exception:
+        pass
 
-with open ("response.text", "w", encoding="utf-8") as f:
-    f.write(response)
+    prompt = f'''I am teaching web devlopment in my sigma web development course. Here are video subtitle chunk containing video title, video number, start time in seconds, end time in seconds, the text at that time:\n\n{new_df[["title" , "number", "start", "end", "text"]].to_json(orient="records")}\n\n-------------------------------------------------------------------------------------------------------------\n{incoming_query}\nUser ask this question related to the video chunk, you have to answer in human way(dont mention the above format, its just for you) where is and how much content is taught in which video (in which and at what timestamp) and guide the user to go to that particular video and return time in minutes not seconds. If user asks unrelated question, tell him that you can only answer question related to the course\n'''
 
-print(response)
+    try:
+        response_text = inference_openai(prompt)
+    except Exception:
+        local = inference(prompt)
+        response_text = local.get("response", "") if isinstance(local, dict) else str(local)
 
-# for index, item in new_df.iterrows():
-#     print(index, item["title"], item["number"], item["text"], item["start"], item["end"])
+    try:
+        with open("prompt.txt", "w", encoding="utf-8") as f:
+            f.write(prompt)
+    except Exception:
+        pass
+
+    try:
+        with open("response.text", "w", encoding="utf-8") as f:
+            f.write(response_text)
+    except Exception:
+        pass
+
+    return response_text
+
+# Removed interactive CLI to prevent terminal prompts when running the project

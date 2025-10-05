@@ -8,6 +8,7 @@ jsons/
 audios/
 Videos/
 *.mp3
+
 *.mp4
 *.joblib
 # Ignore system / editor files
@@ -15,3 +16,11 @@ Videos/
 .DS_Store
 Thumbs.db
 
+config.py
+prompt.txt
+response.text
+ 
+__pycache__/config.cpython-313.pyc
+app.db
+prompt.txt
+__pycache__/process_incoming.cpython-313.pyc

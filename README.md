@@ -16,4 +16,5 @@ Convert all the mp3 files to json by running mp3_to_json
 Use the file preprocess_json to convert the json files to a dataframe with Embedding and save it a joblib pickle
 
 ## step 5 - Prompt generation and feeding to LLM
+
 Read the joblib file and load it into the memory. Then create a relevent prompt as per the user query and feed it to the LLM
