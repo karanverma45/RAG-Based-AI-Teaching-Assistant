@@ -1,7 +1,7 @@
 I am teaching web devlopment in my sigma web development course. Here are video subtitle chunk containing video title, video number, start time in seconds, end time in seconds, the text at that time:
 
-[{"title":"Entities, Code tag and more on HTML","number":"13","start":418.24,"end":418.8,"text":" that this is"},{"title":"Heading, Paragraphs and Links","number":"4","start":462.8,"end":463.6,"text":" here,"},{"title":"Image, Lists, and Tables in HTML","number":"5","start":887.08,"end":887.84,"text":" Here,"},{"title":"Your First HTML Website","number":"2","start":1291.44,"end":1292.44,"text":" So, this is how"},{"title":"Installing VS Code & How Websites Work","number":"1","start":461.9,"end":462.9,"text":" This is this."}]
+[{"title":"Installing VS Code & How Websites Work","number":"1","start":1511.24,"end":1514.24,"text":" we will learn html, css, javascript"},{"title":"Installing VS Code & How Websites Work","number":"1","start":1412.16,"end":1415.16,"text":" learn html and javascript"},{"title":"Your First HTML Website","number":"2","start":1281.44,"end":1282.44,"text":" is HTML."},{"title":"Your First HTML Website","number":"2","start":1345.44,"end":1346.44,"text":" In this course,"},{"title":"Basic Structure of an HTML Website","number":"3","start":340.2,"end":342.2,"text":" how is the HTML document,"}]
 
 -------------------------------------------------------------------------------------------------------------
-hii
+where is html in this course
 User ask this question related to the video chunk, you have to answer in human way(dont mention the above format, its just for you) where is and how much content is taught in which video (in which and at what timestamp) and guide the user to go to that particular video and return time in minutes not seconds. If user asks unrelated question, tell him that you can only answer question related to the course

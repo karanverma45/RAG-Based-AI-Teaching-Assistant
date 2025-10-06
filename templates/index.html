@@ -70,8 +70,6 @@
           <span>Sigma Course</span>
         </div>
         <div class="menu">
-          <button class="btn" id="loginBtn">Login</button>
-          <button class="btn primary" id="signupBtn">Sign up</button>
           <div class="hamburger" id="hamburger"><div></div></div>
         </div>
         <div class="drawer" id="drawer">
@@ -101,10 +99,7 @@
           </div>
           <div class="result" id="result"></div>
         </div>
-        <div class="panel history">
-          <h3>Your previous questions</h3>
-          <div id="history"></div>
-        </div>
+        
       </div>
     </div>
 
@@ -115,11 +110,7 @@
       const askBtn = document.getElementById('askBtn');
       const queryInput = document.getElementById('query');
       const resultBox = document.getElementById('result');
-      const historyBox = document.getElementById('history');
-      const loginBtn = document.getElementById('loginBtn');
-      const signupBtn = document.getElementById('signupBtn');
-      const logoutBtn = document.getElementById('logoutBtn');
-      const logoutRow = document.getElementById('logoutRow');
+      
 
       // Drawer toggle
       hamburger.addEventListener('click', () => {
@@ -146,7 +137,7 @@
         const data = await res.json();
         if (!res.ok) { resultBox.textContent = data.error || 'Error'; return; }
         resultBox.textContent = data.answer || '';
-        await loadHistory();
+        
       }
       askBtn.addEventListener('click', () => {
         const q = queryInput.value.trim(); if (!q) { resultBox.textContent = 'Please enter a question about the course.'; return; }
@@ -154,50 +145,7 @@
       });
       queryInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); askBtn.click(); }});
 
-      // History
-      async function loadHistory() {
-        const res = await fetch('/api/history');
-        const data = await res.json();
-        historyBox.innerHTML = '';
-        (data.questions || []).forEach(q => {
-          const d = document.createElement('div');
-          d.className = 'item';
-          d.textContent = q.question;
-          d.addEventListener('click', () => { queryInput.value = q.question; });
-          historyBox.appendChild(d);
-        });
-        logoutRow.style.display = (data.questions && data.questions.length !== undefined) ? 'flex' : 'none';
-      }
-
-      // Auth flows
-      async function api(path, payload) {
-        const res = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Error');
-        return data;
-      }
-      loginBtn.addEventListener('click', async () => {
-        const email = prompt('Email:');
-        const password = prompt('Password:');
-        if (!email || !password) return;
-        try { await api('/login', { email, password }); await loadHistory(); alert('Logged in'); }
-        catch (e) { alert(e.message); }
-      });
-      signupBtn.addEventListener('click', async () => {
-        const name = prompt('Name (optional):') || '';
-        const email = prompt('Email:');
-        const password = prompt('Password:');
-        if (!email || !password) return;
-        try { await api('/signup', { name, email, password }); await loadHistory(); alert('Signed up and logged in'); }
-        catch (e) { alert(e.message); }
-      });
-      logoutBtn.addEventListener('click', async () => {
-        try { await api('/logout', {}); historyBox.innerHTML = ''; alert('Logged out'); }
-        catch (e) { alert(e.message); }
-      });
-
-      // Init
-      loadHistory();
+      
     </script>
   </body>
   </html>
